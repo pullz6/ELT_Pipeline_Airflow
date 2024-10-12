@@ -1,3 +1,4 @@
+#Importing the libraries
 from datetime import datetime, timedelta
 import psycopg2
 from airflow import DAG
@@ -5,6 +6,7 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 import subprocess
 
+#Setting the default arguments
 default_args = {
     'owner': 'Sara',
     'retry': 2,
@@ -12,10 +14,12 @@ default_args = {
 }
 
 def install_dependencies():
+    #This function installs a few dependencies that was not included in the requirements.txt when the docker image was built. 
     subprocess.run(['pip','install','numpy'])
     subprocess.run(['pip','install','psycopg2'])
     
 def testing_connection():
+    #This function will first test the postgres connection. 
     conn = psycopg2.connect(database='orders',user='username',password='password',
                             host='host.docker.internal',port='5432')
     conn.autocommit = True
@@ -33,6 +37,7 @@ def single_inserts():
     conn = psycopg2.connect(database='orders',user='username',password='password',
                             host='host.docker.internal',port='5432')
     conn.autocommit = True
+    cursor = conn.cursor()
     
     #Importing the CSV
     current_dag_directory = os.path.dirname(os.path.abspath(__file__))
@@ -45,8 +50,7 @@ def single_inserts():
     frames = [df1,df2]
     df = pd.concat(frames)
     
-    cursor = conn.cursor()
-    
+
     #Creating a dataframe with the required dataframe columns
     df = df[['var1', 'var2','var3','var4','var5','var6','var7','var8','var9']]
     df['var1'].fillna(0,inplace=True)
@@ -58,10 +62,12 @@ def single_inserts():
     df['var7'].fillna('None_yet',inplace=True)
     df['var8'].fillna('None_yet',inplace=True)
     df['var9'].fillna('None_yet',inplace=True)
-    
+
+    #Converting the dataframe columns into required datatypes
     df = df.astype({'var1': str, 'var2': str, 'var3': str, 'var4': str, 'var5': int,'var6': str, 'var7': str,'var8': str, 'var9': str})
     print(df.info())
-    
+
+    #Inserting the dataframe into the sql, row by row. 
     for index, row in df.iterrows():
         query = "INSERT INTO table(var1, var2, var3, var4, var5, var6, var7, var8, var9) VALUES('{0}','{1}','{2}','{3}',{4},{5},'{6}','{7}','{8}')".format(row['var1'], row['var2'], row['var3'],row['var4'],row['var5'],row['var6'],row['var7'],row['var8'],row['var9'])
         cursor.execute(query)
@@ -75,28 +81,20 @@ with DAG(
     schedule_interval='@daily'
 ) as dag:
     
-    task1 = PostgresOperator(
-        task_id='check_connection',
-        postgres_conn_id='order_postgres',
-        sql="""
-            select * from table; 
-        """
-    )
-    
-    task2 = PythonOperator(
-        task_id='check_1',
+    task1 = PythonOperator(
+        task_id='Installing Dependencies',
         python_callable=install_dependencies,
     )
     
-    task3 = PythonOperator(
+    task2 = PythonOperator(
         task_id='testing_connection',
         python_callable=testing_connection,
     )
     
-    task4 = PythonOperator(
+    task3 = PythonOperator(
         task_id='Copying_data',
         python_callable=single_inserts
     )
     
 
-    task1 >> task2 >> task3 >> task4
+    task1 >> task2 >> task3
