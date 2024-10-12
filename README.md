@@ -4,8 +4,8 @@ This is project is to create data pipeline to maintain supply chains in airflow.
 
 ## Pre-requisities 
 Please ensure that the below are installed: 
-  Docker 
-  Docker Compose 
+1. Docker 
+2. Docker Compose 
 
 You have download Airflow from docker. 
 You will have to have created a postgres server, database and a table. 
