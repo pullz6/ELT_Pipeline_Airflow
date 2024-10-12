@@ -16,7 +16,7 @@ def install_dependencies():
     subprocess.run(['pip','install','psycopg2'])
     
 def testing_connection():
-    conn = psycopg2.connect(database='orders',user='pulsaragunawardhana',password='',
+    conn = psycopg2.connect(database='orders',user='username',password='password',
                             host='host.docker.internal',port='5432')
     conn.autocommit = True
     if conn is None:
@@ -30,39 +30,40 @@ def single_inserts():
     import os
     
     #Creating the connection with the postgres
-    conn = psycopg2.connect(database='orders',user='pulsaragunawardhana',password='',
+    conn = psycopg2.connect(database='orders',user='username',password='password',
                             host='host.docker.internal',port='5432')
     conn.autocommit = True
     
     #Importing the CSV
     current_dag_directory = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(current_dag_directory, 'india-pipeline-1.xlsx')
+    csv_path = os.path.join(current_dag_directory, 'yourcsv.xlsx')
     xlsx = pd.ExcelFile(csv_path)
     print(xlsx.sheet_names)
-    df1 = pd.read_excel(xlsx, "AUGUST ")
-    df2 = pd.read_excel(xlsx, "SEPTEMBER")
+    #You can use the below if you have specific sheets to extract from and not all. 
+    df1 = pd.read_excel(xlsx, "sheet_1")
+    df2 = pd.read_excel(xlsx, "sheet_2")
     frames = [df1,df2]
     df = pd.concat(frames)
     
     cursor = conn.cursor()
     
     #Creating a dataframe with the required dataframe columns
-    df = df[['Order Received Date', 'Style No','Brand Name','Product Name','Order Qty','Order Value (USD)','Job Status','Production Status','Delivery Date']]
-    df['Order Qty'].fillna(0,inplace=True)
-    df['Order Value (USD)'].fillna(0,inplace=True)
-    df['Order Received Date'].fillna('None_yet',inplace=True)
-    df['Style No'].fillna('None_yet',inplace=True)
-    df['Brand Name'].fillna('None_yet',inplace=True)
-    df['Product Name'].fillna('None_yet',inplace=True)
-    df['Job Status'].fillna('None_yet',inplace=True)
-    df['Production Status'].fillna('None_yet',inplace=True)
-    df['Delivery Date'].fillna('None_yet',inplace=True)
+    df = df[['var1', 'var2','var3','var4','var5','var6','var7','var8','var9']]
+    df['var1'].fillna(0,inplace=True)
+    df['var2'].fillna(0,inplace=True)
+    df['var3'].fillna('None_yet',inplace=True)
+    df['var4'].fillna('None_yet',inplace=True)
+    df['var5'].fillna('None_yet',inplace=True)
+    df['var6'].fillna('None_yet',inplace=True)
+    df['var7'].fillna('None_yet',inplace=True)
+    df['var8'].fillna('None_yet',inplace=True)
+    df['var9'].fillna('None_yet',inplace=True)
     
-    df = df.astype({'Order Received Date': str, 'Style No': str, 'Brand Name': str, 'Product Name': str, 'Order Qty': int,'Order Value (USD)': str, 'Job Status': str,'Production Status': str, 'Delivery Date': str})
+    df = df.astype({'var1': str, 'var2': str, 'var3': str, 'var4': str, 'var5': int,'var6': str, 'var7': str,'var8': str, 'var9': str})
     print(df.info())
     
     for index, row in df.iterrows():
-        query = "INSERT INTO orders_india(order_rec_date, style_no, brand, product_code, order_qty, order_value, job_status, production_status, delivery_date ) VALUES('{0}','{1}','{2}','{3}',{4},{5},'{6}','{7}','{8}')".format(row['Order Received Date'], row['Style No'], row['Brand Name'],row['Product Name'],row['Order Qty'],row['Order Value (USD)'],row['Job Status'],row['Production Status'],row['Delivery Date'])
+        query = "INSERT INTO table(var1, var2, var3, var4, var5, var6, var7, var8, var9) VALUES('{0}','{1}','{2}','{3}',{4},{5},'{6}','{7}','{8}')".format(row['var1'], row['var2'], row['var3'],row['var4'],row['var5'],row['var6'],row['var7'],row['var8'],row['var9'])
         cursor.execute(query)
         print("single_inserts() done")
         
@@ -78,7 +79,7 @@ with DAG(
         task_id='check_connection',
         postgres_conn_id='order_postgres',
         sql="""
-            select * from orders_india; 
+            select * from table; 
         """
     )
     
