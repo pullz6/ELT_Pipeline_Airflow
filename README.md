@@ -22,6 +22,14 @@ Here we are loading an entire dataset into the database. For example when you ha
 Here we are loading only a certain portion of a dataset into the database. For example, when you have some data collection over time after an inital load, you will only upload the data that is newly added. 
 The .py file named as Incremental_load.py performs a incremental load. 
 
+The first screenshot is the final execution of the incremental_load, you can see that final run is successful and the event logs confirming that the single inserts by the dataframe's rows are complete. Consequently data has being loaded into the postgres table as shown in the next screenshot. 
+
+![image](https://github.com/user-attachments/assets/c37d97ff-e0dd-44be-a255-694bb5d0d008)
+
+<img width="372" alt="Screenshot 2024-10-12 at 15 29 35" src="https://github.com/user-attachments/assets/b07e1dd6-5285-4acf-ac74-100c2a9fa0a0">
+
+
+
 
 
 
