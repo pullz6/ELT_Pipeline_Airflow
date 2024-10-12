@@ -28,8 +28,7 @@ The first screenshot is the final execution of the incremental_load, you can see
 
 <img width="372" alt="Screenshot 2024-10-12 at 15 29 35" src="https://github.com/user-attachments/assets/b07e1dd6-5285-4acf-ac74-100c2a9fa0a0">
 
-
-
+#### ITS IMPORTANT TO NOTE THAT YOU CANNOT RUN THE LOADS FOR THE SAME SET OF DATA SEVERAL TIMES SINCE IT WILL CAUSE A PRIMARY KEY ERROR!
 
 
 
