@@ -6,4 +6,7 @@ This is project is to create data pipeline to maintain supply chains in airflow.
 You have download Airflow from docker. 
 You will have to have created a postgres server, database and a table. 
 
+## Installation
+##### Downloading and installing steps:
+
 
